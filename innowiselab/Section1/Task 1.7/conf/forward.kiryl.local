@@ -1,0 +1,13 @@
+$TTL 3600
+@ IN SOA primary.kiryl.local. root.kiryl.local. (
+                        2022072651      ; Serial
+                        3600            ; Refresh
+                        1800            ; Retry
+                        604800          ; Expire
+                        3600 )          ; Negative Cache TTL
+
+; Name Server Information
+@ IN NS primary.kiryl.local.
+
+; IP address of Your Domain Name Server(DNS)
+primary IN A 192.168.2.128

@@ -1,0 +1,10 @@
+---
+- name: Install node.js, npm, git clone, start web-site
+  become: true
+  hosts: test_servers
+
+  roles:
+    - sshuser
+#    - inodejs_npm
+#    - iweb
+#    - ansible-role-nodejs

@@ -1,0 +1,58 @@
+# Создаем пользователей
+
+sudo adduser raymond
+sudo adduser raymond sudo
+sudo adduser john
+
+# Редактируем конфиг, перезагружаем сервис
+
+sudo nano /etc/ssh/sshd_config
+sudo systemctl restart sshd
+
+# Лично мне это нужно было, чтобы SSH-подключение заработало со стороны raymond (ибо было permission denied with public key)
+
+sudo chown root:root /home
+sudo chmod 755 /home
+sudo chown raymond:raymond /home/raymond -R
+sudo chmod 700 /home/raymond /home/raymond/.ssh
+sudo chmod 600 /home/raymond/.ssh/authorized_keys
+
+# Создание документов, скрипта и настройка прав
+
+From Raymond:	sudo nano /home/john/document.txt
+				sudo chmod 644 /home/john/document.txt
+				sudo chmod /home/john/ 755
+
+From John:	nano script.sh
+			chmod script.sh 755
+			
+# Переключение интерпретатора у John на bash, создание нового пользователя с интерпретатором sh
+# проверка скрипта Джона, который работает (была команда pwd). Ну и прокидывание файла
+
+sudo chsh -s /bin/bash john
+sudo useradd -s /bin/sh newuser
+sh /home/john/script.sh
+scp -P 2022 D:\innowiselab.txt john@192.168.2.128:/home/john/
+
+
+# Что касается sshd_config:
+
+1. sudo nano /etc/ssh/sshd_config
+
+Для пользователя John:
+	Match User john
+	PasswordAuthentication yes
+	PubkeyAuthentication no
+Для пользователя Raymond:
+	Match User raymond
+	PasswordAuthentication no
+	PubkeyAuthentication yes
+По побезопасности поменял порт в sshd_config с Port 22 на Port 2022 (можно и любой другой), после чего сохранил и systemctl restart sshd.
+
+По проверке подключения SSH, пользовался Termius, поскольку всегда его юзал. John может подключаться только по паролю, нет возможности подключаться по ключу. А Raymond наоборот: пароль не требует и нельзя использовать, - сразу ключ.
+
+# Иные штучки
+
+Порт открывал через sudo ufw allow 2022, через ufw status отслеживал
+IP-адрес хост-машины узнал через hostname -I
+Ключ для SSH подключения регенил через ssh-keygen -t rsa, после чего закидывал его в ~/.ssh/authrized_keys

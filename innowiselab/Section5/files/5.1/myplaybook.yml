@@ -1,0 +1,67 @@
+# code: language=yaml 
+---
+- name: Ansible Task 1
+  hosts: test_servers
+  become: yes
+  
+  tasks:
+  
+  - name: Installing packages to allow APT to use a repository over HTTPS
+    apt:
+      name: "{{ item }}"
+      state: latest
+    with_items:
+      - ca-certificates
+      - curl
+      - gnupg
+
+  - name: Checking for Docker installation..
+    shell: docker --version
+    register: dockerVersion
+    ignore_errors: yes
+    
+  - name: Checking for docker-compose installation..
+    shell: docker-compose --version
+    register: dockerComposeVersion
+    ignore_errors: yes
+
+  - block: # Installing docker and docker-compose
+
+    - name: Add Docker-GPG key
+      become: yes
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Set Up Docker apt repository
+      become: yes
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+        update_cache: yes
+
+    - name: Install Docker & Docker-Compose and other packages needed for this
+      apt:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - docker-ce 
+        - docker-ce-cli
+        - containerd.io
+        - docker-buildx-plugin
+        - docker-compose-plugin
+        - docker-compose
+
+    when: dockerVersion.rc == 127 or dockerComposeVersion.rc == 127
+  
+  - name: Creating group "docker"
+    group:
+      name: docker
+      state: present
+
+  - name: Creating user "docker" and set group to "docker"
+    user:
+      name: docker
+      group: docker
+      createhome: yes
+      system: yes

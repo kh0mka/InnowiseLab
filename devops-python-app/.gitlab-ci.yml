@@ -1,0 +1,19 @@
+stages:
+  - build
+  - test
+  - deploy
+
+build-job:
+  stage: build
+  script:
+    - docker build -t python-app .
+
+unit-test-job:
+  stage: test
+  script:
+    - docker run python-app python -m unittest tests/test_app.py
+
+deploy-job:      # This job runs in the deploy stage.
+  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+  script:
+    - docker run -d --name py_app_cont python-app

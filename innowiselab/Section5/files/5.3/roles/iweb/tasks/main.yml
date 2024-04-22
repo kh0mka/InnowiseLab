@@ -1,0 +1,17 @@
+---
+# tasks file for iweb
+
+- block: # When clone_repo = true
+  - name: Clone the Git repository
+    git:
+      repo: https://{{gituser}}:{{gitpass}}@devops-gitlab.inno.ws/devops-board/nodejs-ansible.git 
+      dest: /home/ubuntu/myweb/
+
+  - name: Install NPM packages
+    npm:
+      path: /home/ubuntu/myweb/
+
+  - name: Start a website
+    shell: cd /home/ubuntu/myweb/; node index.js </dev/null >/dev/null 2>&1 &
+
+  when: clone_repo

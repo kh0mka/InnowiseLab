@@ -1,0 +1,11 @@
+---
+- name: Install node.js, npm, git clone, start web-site
+  become: true
+  hosts: test_servers
+  vars_files:
+    - /home/khomenok/ansible_tasks/5.3ansible/roles/iweb/vars/secretGit.yml
+
+  roles:
+    - inodejs_npm
+    - iweb
+#    - ansible-role-nodejs

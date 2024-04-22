@@ -1,0 +1,8 @@
+# code: language=yaml 
+---
+- name: Install docker utils with install_docker role, after that using install_nginx role 
+  hosts: test_servers
+  become: yes
+  roles:
+    - install_docker
+    - install_nginx

@@ -1,0 +1,11 @@
+server {
+    listen {{ listening_port }};
+    server_name {{ server_ipv4.stdout }};
+    root   {{ root_directory }};
+
+    location / {
+        try_files $uri $uri/ =404;
+        auth_basic           "Secret Area of site";
+        auth_basic_user_file {{ htpasswd_file }};
+    }
+}

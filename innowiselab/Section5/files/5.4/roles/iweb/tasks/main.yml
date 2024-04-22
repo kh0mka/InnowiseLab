@@ -1,0 +1,19 @@
+---
+# tasks file for iweb
+
+- name: This block words when clone_repo = true
+  when: clone_repo
+  block:
+
+    - name: Clone the Git repository
+      ansible.builtin.git:
+        repo: https://{{ gituser }}:{{ gitpass }}@devops-gitlab.inno.ws/devops-board/nodejs-ansible.git
+        version: master
+        dest: /home/ubuntu/myweb/
+
+    - name: Install NPM packages
+      community.general.npm:
+        path: /home/ubuntu/myweb/
+
+    - name: Start a website
+      ansible.builtin.shell: cd /home/ubuntu/myweb/; node index.js </dev/null >/dev/null 2>&1 &

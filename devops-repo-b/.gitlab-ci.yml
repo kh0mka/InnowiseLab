@@ -1,0 +1,20 @@
+# .gitlab-ci.yml
+include:
+  - project: 'kiryl.homenok/devops-repo-a'
+    ref: main
+    file: '.test-ci.yml'
+
+stages:
+    - build
+    - test
+    - deploy
+
+job-build:
+    stage: build
+    script:
+        - echo "Hello from build job"
+
+job-deploy:
+    stage: deploy
+    script:
+        - echo "Hello from deploy job"

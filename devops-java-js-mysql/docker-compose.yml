@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend/
+    container_name: frontend-java
+    image: frontend-java
+    ports:
+      - "3000:80"
+    networks:
+      - frontend_network
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  database:
+    image: mysql
+    container_name: mysqldb-for-java
+    env_file:
+      - .env
+    networks:
+      - backend_network
+    expose:
+      - "3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  backend:
+    build:
+      context: ./backend/
+    container_name: backend-java
+    image: backend-java
+    ports:
+      - "127.0.0.1:8080:8080"
+    env_file:
+      - .env
+    networks:
+      - frontend_network
+      - backend_network
+    healthcheck:
+    # Эту команду я посмотрел в готовом решении, потому что не знал,
+    # как проверить работу бэка.
+    # java-js-mysql/backend/src/main/java/com/arjuncodes/studentsystem/controller/StudentController.java
+    # Там можно посмотреть все функции "API" - getAll, add. Теперь понимаю.
+      test: ["CMD-SHELL", "curl --fail http://localhost:8080/student/getAll || exit 1"] 
+      # Эту структуру писал сам, значения тоже, как и весь docker-compose
+      # к тому же, у меня стоит расширение в VSCode, которое автоматически строит структуру
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      database:
+        condition: service_healthy
+    
+networks:
+  frontend_network:
+    name: frontend_network
+    driver: bridge
+  backend_network:
+    name: backend_network
+    driver: bridge

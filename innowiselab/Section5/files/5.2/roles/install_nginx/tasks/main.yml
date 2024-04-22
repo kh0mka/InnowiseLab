@@ -1,0 +1,67 @@
+---
+# tasks file for install_nginx
+- name: Update update
+  apt:
+    update_cache: true
+
+- name: Install NGINX
+  apt:
+    name: nginx
+    state: latest
+
+- name: Install apache-utils
+  apt:
+    name: apache2-utils
+    state: latest
+
+- name: Installing passlib to .htpasswd file # Neccessary lib to htpasswd module
+  pip:
+    name: passlib
+    state: present
+
+- name: Install pip3 # Install pip3 it necessary to using htpasswd module and passlib
+  shell: sudo apt-get update && sudo apt-get install -y python3-pip
+
+- name: Create and add user to .htpasswd file
+  htpasswd:
+    path: /etc/nginx/.htpasswd
+    name: innowiseuser
+    password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63373063666264313862613965613639323830346433333666613061303131353964663033363962
+          6534343966633339326638323139656365623836306361320a633361663536306133343436326537
+          61356638363434386235616161383431316466313638646137396636303235333162663762653664
+          6338363934396562340a363062393933396562303739616139333561366238653635343730353731
+          3137
+    owner: www-data
+    group: www-data
+    mode: 0640
+
+- name: Getting public IPv4
+  shell: curl http://169.254.169.254/latest/meta-data/public-ipv4
+  register: server_ipv4
+
+- name: Generate .conf file for nginx
+  template:
+    src: mysite.j2
+    dest: /etc/nginx/conf.d/asite.conf
+    owner: www-data
+    group: www-data
+    mode: 0755
+
+#- name: Create symlink to site
+#  file:
+#    src: /etc/nginx/sites-available/mysite.conf
+#    dest: /etc/nginx/sites-enabled/mysite.conf
+#    state: link
+
+- name: Allow connections on 80
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_ports: 80
+    jump: ACCEPT
+
+- name: Reloading NGINX
+  shell: nginx -s reload
+  

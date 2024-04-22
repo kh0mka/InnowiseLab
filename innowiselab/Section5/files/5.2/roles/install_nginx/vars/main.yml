@@ -1,0 +1,5 @@
+---
+# vars file for install_nginx
+listening_port: 80
+htpasswd_file: /etc/nginx/.htpasswd
+root_directory: /usr/share/nginx/html

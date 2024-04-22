@@ -1,0 +1,2 @@
+[test_servers]
+aws_srv1 ansible_host=16.170.253.158

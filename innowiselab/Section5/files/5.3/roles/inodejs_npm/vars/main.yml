@@ -1,0 +1,4 @@
+---
+# vars file for inodejs_npm
+download_folder: /home/ubuntu/downloads
+nodejs_folder: /opt/nodejs

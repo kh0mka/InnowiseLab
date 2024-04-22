@@ -1,0 +1,4 @@
+---
+# defaults file for sshuser
+ssh_user: "innowise_ssh_user"
+ssh_key_path: "privatekeyfortask.yml"

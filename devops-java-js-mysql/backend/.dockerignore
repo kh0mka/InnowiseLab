@@ -1,0 +1,7 @@
+# Exclude Dockerfile & README.md
+Dockerfile
+README.md
+
+# Exclude files .*ignore
+.dockerignore
+.gitignore
